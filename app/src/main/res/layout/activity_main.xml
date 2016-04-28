@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.plpgogogo.capsuleup.MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#fff"
+        android:elevation="1dp">
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <ImageView
+                android:layout_centerInParent="true"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:id="@+id/analysisIndicator"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:src="@drawable/ic_assessment_black_48dp"
+                android:tint="@color/indicatorNoSelect"/>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <ImageView
+                android:layout_centerInParent="true"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:id="@+id/recordIndicator"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:src="@drawable/ic_mode_edit_black_48dp"
+                android:tint="@color/indicatorSelected"/>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <ImageView
+                android:layout_centerInParent="true"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:id="@+id/queryIndicator"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:src="@drawable/ic_search_black_48dp"
+                android:tint="@color/indicatorNoSelect"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+    <android.support.v4.view.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/viewpager">
+    </android.support.v4.view.ViewPager>
+</LinearLayout>
