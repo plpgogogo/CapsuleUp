@@ -6,11 +6,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.plpgogogo.capsuleup.database.DaoMaster;
 import com.plpgogogo.capsuleup.database.DaoSession;
+import com.plpgogogo.capsuleup.database.Data;
 import com.plpgogogo.capsuleup.database.DataDao;
 import com.plpgogogo.capsuleup.database.UserDao;
 import com.plpgogogo.capsuleup.utils.TintUtil;
@@ -32,6 +35,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static DaoSession daoSession;
     public static DataDao dataDao;
     public static UserDao userDao;
+
+    private ImageView fromView, toView;
+    private boolean isClickChange = false;
+    private int targetPage = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,20 +79,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if(!isClickChange){
+                    if(positionOffsetPixels < 0){ // to left
+                        getfromAndtoView(position, true);
+                        TintUtil.changeTintByOffset(fromView, toView, positionOffset);
+                        Log.e("", positionOffsetPixels + "<<<<<<<<<<");
+                    }
+                    else if(positionOffsetPixels > 0){ //to right
+                        getfromAndtoView(position, false);
+                        TintUtil.changeTintByOffset(fromView, toView, positionOffset);
+                        Log.e("", positionOffsetPixels + ">>>>>>>>");
+                    }
+                }
             }
 
             @Override
             public void onPageSelected(int position) {
-                viewPager.setCurrentItem(position, true);
                 changeIndicator(position);
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
+                if(state == 0 && targetPage == viewPager.getCurrentItem()){
+                    isClickChange = false;
+                    Toast.makeText(MainActivity.this, viewPager.getCurrentItem() + "", Toast.LENGTH_SHORT).show();
+                    targetPage = -1;
+                }
             }
         });
 
         initDAO();
+        Data data = new Data();
+        data.setMoney(10);
+        data.setMtype(10);
+        data.setPatten(0);
+        data.setTame("2015-10-12");
+        data.setUserid(100);
+        dataDao.insert(data);
 
     }
 
@@ -120,17 +150,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         userDao = daoSession.getUserDao();
     }
 
+    private void getfromAndtoView(int position, boolean isToLeft){
+        switch (position){
+            case 0:
+                fromView = analysisIndicator;
+                toView = recordIndicator;
+                break;
+            case 1:
+                fromView = recordIndicator;
+                toView = (isToLeft)? analysisIndicator: queryIndicator;
+                break;
+            case 2:
+                fromView = queryIndicator;
+                toView = recordIndicator;
+                break;
+        }
+    }
+
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.analysisIndicator:
+                isClickChange = true;
+                targetPage = 0;
                 viewPager.setCurrentItem(0, true);
                 break;
             case R.id.recordIndicator:
+                isClickChange = true;
+                targetPage = 1;
                 viewPager.setCurrentItem(1, true);
                 break;
             case R.id.queryIndicator:
+                isClickChange = true;
+                targetPage = 2;
                 viewPager.setCurrentItem(2, true);
                 break;
         }
