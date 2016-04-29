@@ -1,6 +1,8 @@
 package com.plpgogogo.capsuleup.adapters;
 
 import android.content.Context;
+import android.media.Image;
+import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.daimajia.swipe.SwipeLayout;
+import com.daimajia.swipe.adapters.BaseSwipeAdapter;
+import com.plpgogogo.capsuleup.MainActivity;
 import com.plpgogogo.capsuleup.R;
 import com.plpgogogo.capsuleup.database.Data;
 
@@ -28,14 +33,14 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new MyViewHolder(LayoutInflater.from(mContext).inflate(R.layout.content_data, null, false));
+        return new MyViewHolder(LayoutInflater.from(mContext).inflate(R.layout.content_data_swipe, null, false));
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, final int position) {
         Data data = datas.get(position);
-        holder.tvDate.setText("￥ " + data.getTame());
-        holder.tvMoney.setText(data.getTame());
+        holder.tvMoney.setText("￥ " + data.getMoney());
+        holder.tvDate.setText(data.getTame());
         if(data.getPicture() != null){
             holder.memoIndicator_1.setImageDrawable(mContext.getDrawable(R.drawable.ic_insert_photo_black_48dp));
             if(data.getTape() != null){

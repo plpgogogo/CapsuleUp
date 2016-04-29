@@ -1,32 +1,31 @@
 package com.plpgogogo.capsuleup;
 
 
-import android.animation.Animator;
 import android.animation.LayoutTransition;
-import android.animation.ObjectAnimator;
 import android.os.Bundle;
+import android.support.design.widget.SwipeDismissBehavior;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.plpgogogo.capsuleup.adapters.MyRecyclerViewAdapter;
 import com.plpgogogo.capsuleup.database.Data;
 import com.plpgogogo.capsuleup.utils.RotateUtil;
-import com.plpgogogo.capsuleup.utils.TintUtil;
 
 import java.util.List;
+
+import io.github.codefalling.recyclerviewswipedismiss.SwipeDismissRecyclerViewTouchListener;
 
 
 /**
@@ -37,7 +36,6 @@ public class QueryFragment extends Fragment implements View.OnClickListener{
 
     private View mView;
 
-    private LinearLayout container;
     private CardView queryFrame, conditionFrame;
 
     private ImageView moreConditions, queryBtn;
@@ -64,7 +62,6 @@ public class QueryFragment extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_query, container, false);
 
-        container = (LinearLayout) mView.findViewById(R.id.container);
         queryFrame = (CardView) mView.findViewById(R.id.queryFrame);
         conditionFrame = (CardView) mView.findViewById(R.id.conditionFrame);
 
@@ -86,9 +83,31 @@ public class QueryFragment extends Fragment implements View.OnClickListener{
 
         recyclerView = (RecyclerView) mView.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        List<Data> datas = MainActivity.dataDao.loadAll();
-        recyclerView.setAdapter(new MyRecyclerViewAdapter(getContext(), datas));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        reflashRecyclerView(recyclerView, MainActivity.dataDao.loadAll());
+        SwipeDismissRecyclerViewTouchListener listener = new SwipeDismissRecyclerViewTouchListener.Builder(recyclerView, new SwipeDismissRecyclerViewTouchListener.DismissCallbacks() {
+                    @Override
+                    public boolean canDismiss(int position) {
+                        return true;
+                    }
 
+                    @Override
+                    public void onDismiss(View view) {
+                        reflashRecyclerView(recyclerView, MainActivity.dataDao.loadAll());
+
+                    }
+                })
+                .setIsVertical(false)
+                .setItemTouchCallback(
+                        new SwipeDismissRecyclerViewTouchListener.OnItemTouchCallBack() {
+                            @Override
+                            public void onTouch(int index) {
+                                // Do what you want when item be touched
+                            }
+                        })
+                .create();
+        listener.setEnabled(true);
+        recyclerView.setOnTouchListener(listener);
 
         initEvent();
         initDataFrame();
@@ -158,5 +177,9 @@ public class QueryFragment extends Fragment implements View.OnClickListener{
                 }
                 break;
         }
+    }
+
+    private void reflashRecyclerView(RecyclerView recyclerView, List<Data> datas){
+        recyclerView.setAdapter(new MyRecyclerViewAdapter(getContext(), datas));
     }
 }
