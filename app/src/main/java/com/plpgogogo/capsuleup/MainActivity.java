@@ -11,11 +11,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.plpgogogo.capsuleup.custom.MyViewPager;
 import com.plpgogogo.capsuleup.database.DaoMaster;
 import com.plpgogogo.capsuleup.database.DaoSession;
 import com.plpgogogo.capsuleup.database.Data;
 import com.plpgogogo.capsuleup.database.DataDao;
 import com.plpgogogo.capsuleup.database.UserDao;
+import com.plpgogogo.capsuleup.utils.ScaleUtil;
 import com.plpgogogo.capsuleup.utils.TintUtil;
 
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
 
-    private ViewPager viewPager;
+    private MyViewPager viewPager;
     private ImageView analysisIndicator;
     private ImageView recordIndicator;
     private ImageView queryIndicator;
@@ -45,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager = (MyViewPager) findViewById(R.id.viewpager);
         analysisIndicator = (ImageView) findViewById(R.id.analysisIndicator);
         recordIndicator = (ImageView) findViewById(R.id.recordIndicator);
         queryIndicator = (ImageView) findViewById(R.id.queryIndicator);
@@ -75,19 +77,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         };
         viewPager.setAdapter(fragmentPagerAdapter);
         viewPager.setCurrentItem(1);
+        changeIndicator(1);
         viewPager.setOffscreenPageLimit(3);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 if(!isClickChange){
                     if(positionOffsetPixels < 0){ // to left
-                        getfromAndtoView(position, true);
+                        getFromAndToView(position, true);
                         TintUtil.changeTintByOffset(fromView, toView, positionOffset);
+                        ScaleUtil.changeScaleByOffset(fromView, toView, positionOffset);
                         Log.e("", positionOffsetPixels + "<<<<<<<<<<");
                     }
                     else if(positionOffsetPixels > 0){ //to right
-                        getfromAndtoView(position, false);
+                        getFromAndToView(position, false);
                         TintUtil.changeTintByOffset(fromView, toView, positionOffset);
+                        ScaleUtil.changeScaleByOffset(fromView, toView, positionOffset);
                         Log.e("", positionOffsetPixels + ">>>>>>>>");
                     }
                 }
@@ -96,13 +101,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onPageSelected(int position) {
                 changeIndicator(position);
+                Toast.makeText(MainActivity.this, viewPager.getCurrentItem() + "", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
                 if(state == 0 && targetPage == viewPager.getCurrentItem()){
                     isClickChange = false;
-                    Toast.makeText(MainActivity.this, viewPager.getCurrentItem() + "", Toast.LENGTH_SHORT).show();
                     targetPage = -1;
                 }
             }
@@ -123,6 +128,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TintUtil.changeTint(analysisIndicator, TintUtil.INDICATOR_TO_NOSELECT);
         TintUtil.changeTint(recordIndicator, TintUtil.INDICATOR_TO_NOSELECT);
         TintUtil.changeTint(queryIndicator, TintUtil.INDICATOR_TO_NOSELECT);
+        ScaleUtil.changeScale(analysisIndicator, TintUtil.INDICATOR_TO_NOSELECT);
+        ScaleUtil.changeScale(recordIndicator, TintUtil.INDICATOR_TO_NOSELECT);
+        ScaleUtil.changeScale(queryIndicator, TintUtil.INDICATOR_TO_NOSELECT);
     }
 
     private void changeIndicator(int i){
@@ -130,12 +138,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (i){
             case 0:
                 TintUtil.changeTint(analysisIndicator, TintUtil.INDICATOR_TO_SELECTED);
+                ScaleUtil.changeScale(analysisIndicator, TintUtil.INDICATOR_TO_SELECTED);
                 break;
             case 1:
                 TintUtil.changeTint(recordIndicator, TintUtil.INDICATOR_TO_SELECTED);
+                ScaleUtil.changeScale(recordIndicator, TintUtil.INDICATOR_TO_SELECTED);
                 break;
             case 2:
                 TintUtil.changeTint(queryIndicator, TintUtil.INDICATOR_TO_SELECTED);
+                ScaleUtil.changeScale(queryIndicator, TintUtil.INDICATOR_TO_SELECTED);
                 break;
         }
     }
@@ -150,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         userDao = daoSession.getUserDao();
     }
 
-    private void getfromAndtoView(int position, boolean isToLeft){
+    private void getFromAndToView(int position, boolean isToLeft){
         switch (position){
             case 0:
                 fromView = analysisIndicator;
@@ -174,17 +185,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.analysisIndicator:
                 isClickChange = true;
                 targetPage = 0;
-                viewPager.setCurrentItem(0, true);
+                viewPager.setCurrentItem(0);
                 break;
             case R.id.recordIndicator:
                 isClickChange = true;
                 targetPage = 1;
-                viewPager.setCurrentItem(1, true);
+                viewPager.setCurrentItem(1);
                 break;
             case R.id.queryIndicator:
                 isClickChange = true;
                 targetPage = 2;
-                viewPager.setCurrentItem(2, true);
+                viewPager.setCurrentItem(2);
                 break;
         }
     }
